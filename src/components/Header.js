@@ -4,13 +4,25 @@ import {
     SearchIcon,
     ShoppingCartIcon,
 } from "@heroicons/react/outline";
+import { signIn, signOut, useSession } from "next-auth/client";
+import { useRouter } from "next/router";
+import { useSelector } from "react-redux";
+import { selectItems } from "../slices/basketSlice";
+
 
 function Header() {
+
+    const [session] = useSession();
+    const router = useRouter();
+    const items = useSelector(selectItems);
+
     return (
         <header>
             <div className="flex items-center   bg-amazon_blue p-1 flex-grow py-2">
                 <div className="mt-2 flex items-cetner rounded-md flex-grow sm:flex-grow-0">
-                    <Image src='https://links.papareact.com/f90'
+                    <Image
+                        onClick={() => router.push('/')}
+                        src='https://links.papareact.com/f90'
                         width={150}
                         height={40}
                         objectFit="contrain"
@@ -24,16 +36,18 @@ function Header() {
                 </div>
                 {/* r top */}
                 <div className="text-white flex items-center text-xs space-x-6 mx-6 whitespace-nowrap">
-                    <div className='link' >
-                        <p>Hello Mare</p>
+                    <div onClick={!session ? signIn : signOut} className='link' >
+                        <p>{session ? `Hello, ${session.user.name}` : "Sign in"} </p>
                         <p className='font-extrabold md:text-small'>Account & Lists</p>
                     </div>
                     <div className='link'>
                         <p>Returns</p>
                         <p className='font-extrabold md:text-small'>& Orders</p>
                     </div>
-                    <div className='replative link flex items-center'>
-                        <span className="absolute top-3 right-5 md:right-14 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">0</span>                        
+                    <div onClick={() => router.push('/checkout')} className='reltive link flex items-center'>
+                        <span className="absolute top-3 right-5 md:right-14 h-4 w-4 bg-yellow-400 text-center rounded-full text-black font-bold">
+                            {items.length}
+                        </span>
                         <ShoppingCartIcon className='h-10 ' />
                         <p className='hidden md:inline mt-2 font-extrabold md:text-small'>Basket</p>
                     </div>
