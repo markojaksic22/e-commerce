@@ -17,13 +17,13 @@ const endpointSecret = process.env.STRIPE_SIGNING_SECRET;
 
 const fulfillOrder = async (session) => {
    
+    console.log('Fulfilling order', session);
     return app
         .firestore()
-        .collection('users')
+        .collection("users")
         .doc(session.metadata.email)
-        .collection('orders')
-        .doc(session.id).set({
-            amount: session.amount_total / 100,
+        .collection("orders").doc(session.id).set({
+            amount: session.amount_total  / 100,
             amount_shiping: session.total_details.amount_shipping / 100,
             images: JSON.parse(session.metadata.images),
             timestamp: admin.firestore.FieldValue.serverTimestamp()
@@ -35,7 +35,7 @@ const fulfillOrder = async (session) => {
 
 
 export default async (req, res) => {
-    if (req.method === 'POST') {
+    if (req.method === "POST") {
         const requestBuffer = await buffer(req);
         const payload = requestBuffer.toString();
         const sig = req.headers["stripe-signature"];
@@ -50,7 +50,7 @@ export default async (req, res) => {
             return res.status(400).send(`Webhook error: $(err.message)`)
         }
         // completed
-        if (event.type === 'checkout.session.completed') {
+        if (event.type === "checkout.session.completed") {
             const session = event.data.object;
 
             // Fulfill the order...
@@ -64,5 +64,5 @@ export const config = {
     api: {
         bodyParser: false,
         externalResolver: true
-    }
-}
+    },
+};
